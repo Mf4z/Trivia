@@ -37,9 +37,27 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get('/categories')
         data = json.loads(res.data)
 
-        self.assertEqual(res.status_code,200)
+        self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'],True)
-        self.assertNotEquals(data['total_categories'],0)
+        self.assertNotEqual(data['total_categories'],0)
+
+    def test_get_questions(self):
+        res = self.client().get('/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'],True)
+        self.assertIsNotNone(data['current_category'])
+        self.assertNotEqual(data['total_questions'],0)
+
+    def test_error_questions_with_non_existing_pagination(self):
+        res = self.client().get('/questions?page=1000')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'],False)
+        self.assertEqual(data['message'], 'Not found')
+        
 
 
 # Make the tests conveniently executable

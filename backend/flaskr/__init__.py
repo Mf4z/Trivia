@@ -1,4 +1,5 @@
 import os
+from unicodedata import category
 from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -7,6 +8,16 @@ import random
 from models import setup_db, Question, Category
 
 QUESTIONS_PER_PAGE = 10
+
+def paginate_questions(request,selection):
+    page = request.args.get('page',1,type=int)
+    start = (page - 1) * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
+
+    formatted_selection = [question.format() for question in selection]
+    current_selection = formatted_selection[start:end]
+
+    return current_selection
 
 def create_app(test_config=None):
     # create and configure the app
@@ -37,9 +48,12 @@ def create_app(test_config=None):
     def get_categories():
         try:
             categories = Category.query.all()
-            total_categories = len(categories)
             formatted_categories = [category.format() for category in categories]
+            total_categories = len(formatted_categories)
             
+            if total_categories == 0:
+                abort(404)
+                
             return jsonify({
                 'success':True,
                 'categories': formatted_categories,
@@ -62,6 +76,36 @@ def create_app(test_config=None):
     ten questions per page and pagination at the bottom of the screen for three pages.
     Clicking on the page numbers should update the questions.
     """
+    @app.route('/questions')
+    def get_questions():
+        try:
+            questions = Question.query.all()
+            categories = Category.query.all()
+            total_questions = len(questions)
+
+            current_questions = paginate_questions(request, questions)
+            
+            formatted_categories = [category.format() for category in categories]
+            
+            category_length = len(formatted_categories)
+            random_category_id = random.randint(1,category_length)
+            category = Category.query.get(random_category_id)
+            current_category = category.type
+
+            if len(current_questions) == 0:
+                abort(404)
+
+            return jsonify({
+                'success':True,
+                'questions':current_questions,
+                'categories':formatted_categories,
+                'current_category':current_category,
+                'total_questions': total_questions,
+            })
+
+            
+        except:
+            abort(404)
 
     """
     @TODO:
@@ -119,6 +163,13 @@ def create_app(test_config=None):
     Create error handlers for all expected errors
     including 404 and 422.
     """
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            'success':False,
+            'error':404,
+            'message': 'Not found'
+        }), 404
 
     return app
 
