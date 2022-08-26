@@ -86,8 +86,8 @@ def create_app(test_config=None):
             current_questions = paginate_questions(request, questions)
             
             formatted_categories = [category.format() for category in categories]
-            
             category_length = len(formatted_categories)
+
             random_category_id = random.randint(1,category_length)
             category = Category.query.get(random_category_id)
             current_category = category.type
@@ -114,6 +114,7 @@ def create_app(test_config=None):
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
+
 
     """
     @TODO:
@@ -166,10 +167,18 @@ def create_app(test_config=None):
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
-            'success':False,
-            'error':404,
+            'success': False,
+            'error': 404,
             'message': 'Not found'
         }), 404
+
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+            'success': False,
+            'error': 422,
+            'message': 'Unprocessable entity'
+        }), 422
 
     return app
 

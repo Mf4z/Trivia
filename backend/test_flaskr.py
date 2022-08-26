@@ -57,6 +57,27 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['success'],False)
         self.assertEqual(data['message'], 'Not found')
+
+    def test_delete_question(self):
+        question_id = 3
+        res = self.client().delete('/questions/' + str(question_id))
+        data = json.loads(res.data)
+
+        question = Question.query.filter(Question.id == question_id).one_or_none()
+
+        self.assertEqual(res.status_code,200)
+        self.assertEqual(data['success'],True)
+        self.assertEqual(data['deleted'],3)
+        self.assertIsNone(question)
+
+    def test_non_existent_question(self):
+        res = self.client().delete('/questions/xyz')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code,422)
+        self.assertEqual(data['success'],False)
+        self.assertEqual(data['message'], 'Unprocessable entity')
+
         
 
 
