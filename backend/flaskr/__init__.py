@@ -158,7 +158,21 @@ def create_app(test_config=None):
             answer = body.get("answer", None)
             category = body.get("category", None)
             difficulty = body.get("difficulty", None)
+            search_term = body.get("searchTerm", None)
 
+            # Search Functionality
+            if search_term:
+                searched_questions = Question.query.filter(Question.question.ilike(f"%{search_term}%"))
+                formatted_questions = [question.format() for question in searched_questions]
+                total_questions = len(formatted_questions)  
+                
+
+                return jsonify({
+                    'success': True,
+                    'questions': formatted_questions,
+                    'total_questions': total_questions
+                })
+        
             new_question = Question(question=question, answer=answer, category=category, difficulty=difficulty)
             new_question.insert()
 
@@ -168,12 +182,14 @@ def create_app(test_config=None):
             })
 
         except:
+            # except Exception as e:
+            # print(str(e))
             db.session.rollback()
             abort(405)
 
         finally:
             db.session.close()
-            
+
     """
     @TODO:
     Create a POST endpoint to get questions based on a search term.

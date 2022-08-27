@@ -63,7 +63,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['message'], 'Not found')
 
     def test_delete_question(self):
-        question_id = 6
+        question_id = 13
         res = self.client().delete('/questions/' + str(question_id))
         data = json.loads(res.data)
 
@@ -72,7 +72,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertEqual(data['deleted'], question_id)
-        self.assertNotAlmostEqual(data['total_questions'], 0)
+        self.assertNotEqual(data['total_questions'], 0)
         self.assertIsNone(question)
 
     def test_422_error_delete_non_existent_question(self):
@@ -102,7 +102,7 @@ class TriviaTestCase(unittest.TestCase):
     def test_search_question(self):
         res = self.client().post('/questions', json={'searchTerm': 'title'})
         data = json.loads(res.data)
-
+    
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertNotEqual(data['total_questions'], 0)        
