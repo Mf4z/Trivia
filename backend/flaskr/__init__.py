@@ -1,3 +1,4 @@
+from crypt import methods
 import os
 from unicodedata import category
 from flask import Flask, request, abort, jsonify
@@ -5,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import setup_db, Question, Category,db
 
 QUESTIONS_PER_PAGE = 10
 
@@ -48,7 +49,7 @@ def create_app(test_config=None):
     def get_categories():
         try:
             categories = Category.query.all()
-            formatted_categories = [category.format() for category in categories]
+            formatted_categories = {category.id:category.type for category in categories}
             total_categories = len(formatted_categories)
             
             if total_categories == 0:
@@ -85,7 +86,7 @@ def create_app(test_config=None):
 
             current_questions = paginate_questions(request, questions)
             
-            formatted_categories = [category.format() for category in categories]
+            formatted_categories = {category.id:category.type for category in categories}
             category_length = len(formatted_categories)
 
             random_category_id = random.randint(1,category_length)
@@ -103,7 +104,6 @@ def create_app(test_config=None):
                 'total_questions': total_questions,
             })
 
-            
         except:
             abort(404)
 
@@ -114,8 +114,31 @@ def create_app(test_config=None):
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
+    @app.route('/questions/<int:question_id>', methods=['DELETE'])
+    def delete_question(question_id):
+        try:
+            questions = Question.query.all()
+            question = Question.query.filter(Question.id == question_id).one_or_none()
+            total_questions = len(questions)
 
+            if question is None:
+                abort(404)
 
+            question.delete()
+
+            return jsonify({
+                'success': True,
+                'deleted': question_id,
+                'total_questions': total_questions
+            })
+
+        except:
+            db.session.rollback()
+            abort(422)
+        
+        finally:
+            db.session.close()
+        
     """
     @TODO:
     Create an endpoint to POST a new question,
@@ -127,6 +150,30 @@ def create_app(test_config=None):
     of the questions list in the "List" tab.
     """
 
+    @app.route('/questions', methods=['POST'])
+    def create_qustions():
+        try:
+            body = request.get_json()
+            question = body.get("question", None)
+            answer = body.get("answer", None)
+            category = body.get("category", None)
+            difficulty = body.get("difficulty", None)
+
+            new_question = Question(question=question, answer=answer, category=category, difficulty=difficulty)
+            new_question.insert()
+
+            return jsonify({
+                'success': True,
+                'question': question
+            })
+
+        except:
+            db.session.rollback()
+            abort(405)
+
+        finally:
+            db.session.close()
+            
     """
     @TODO:
     Create a POST endpoint to get questions based on a search term.
@@ -171,6 +218,14 @@ def create_app(test_config=None):
             'error': 404,
             'message': 'Not found'
         }), 404
+
+    @app.errorhandler(405)
+    def not_allowed(error):
+        return jsonify({
+            'success': False,
+            'error': 405,
+            'message': 'Method not allowed'
+        }), 405
 
     @app.errorhandler(422)
     def unprocessable(error):
