@@ -220,7 +220,7 @@ def create_app(test_config=None):
             'questions': formatted_questions,
             'category': category_id
         })
-        
+
     """
     @TODO:
     Create a POST endpoint to get questions to play the quiz.
@@ -232,6 +232,35 @@ def create_app(test_config=None):
     one question at a time is displayed, the user is allowed to answer
     and shown whether they were correct or not.
     """
+    
+    @app.route('/quizzes' , methods=['POST'])
+    def get_quizzes():
+        try:
+            body = request.get_json()
+            
+            previous_questions = body.get("previous_questions", None)
+            quiz_category = body.get("quiz_category", None)
+            
+            category_id = quiz_category['id']
+            questions = []
+
+            if  category_id == 0:
+                questions = Question.query.filter(Question.id.not_in(previous_questions))
+
+            else:
+                questions = Question.query.filter(Question.category == category_id,Question.id.not_in(previous_questions))
+            
+            quiz_questions = [question.format() for question in questions]
+            random_question = random.randint(0, len(quiz_questions) - 1)
+            question = quiz_questions[random_question]
+            print(question)
+            return jsonify({
+                'success': True,
+                'question': question
+            })
+
+        except:
+            abort(422)
 
     """
     @TODO:
@@ -261,6 +290,14 @@ def create_app(test_config=None):
             'error': 422,
             'message': 'Unprocessable entity'
         }), 422
+
+    @app.errorhandler(500)
+    def server_error(error):
+        return jsonify({
+            'success': False,
+            'error': 500,
+            'message': 'Server error'
+        }), 500
 
     return app
 

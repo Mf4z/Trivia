@@ -126,6 +126,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['category'],category_id)
         self.assertNotEqual(len(data['questions']), 0)
 
+    def test_get_quizzes(self):
+        res = self.client().post('/quizzes', json={'previous_questions' : [2,4], 'quiz_category' : 2})
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertIsNotNone(data['question'])
         
 
 
