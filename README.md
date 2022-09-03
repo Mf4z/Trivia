@@ -20,7 +20,7 @@ This project is part of the requirements need to fulfill the attainment of the A
 
 ### Pre-requisites and Local Development
 Developers using this project should already have the following installed on their local machines :
--   Python3
+-   python/python3
 -   pip/pip3
 -   node
 ### Backend
