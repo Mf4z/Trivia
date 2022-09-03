@@ -1,5 +1,4 @@
 import os
-from unicodedata import category
 import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
@@ -24,7 +23,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.new_question = {'question': 'Test question','answer': 'Test answer','category': 1,'difficulty': 1}
         self.quiz_question = {'previous_questions':[],'quiz_category': {'type': 'click', 'id': 0}}
-
+    
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
@@ -138,6 +137,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertIsNotNone(data['question'])
         
+    def test_400_error_non_existent_quizzes(self):
+        res = self.client().post('/quizzes')
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'Bad request')
 
 
 # Make the tests conveniently executable

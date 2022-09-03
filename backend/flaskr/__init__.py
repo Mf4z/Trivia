@@ -182,8 +182,6 @@ def create_app(test_config=None):
             })
 
         except:
-            # except Exception as e:
-            # print(str(e))
             db.session.rollback()
             abort(405)
 
@@ -242,21 +240,16 @@ def create_app(test_config=None):
             
             previous_questions = body.get("previous_questions", None)
             quiz_category = body.get("quiz_category", None)
-            print(previous_questions)
-            print(quiz_category)
-            
+
             category_id = quiz_category['id']
 
             # Check for default category
             if  category_id == 0:
                 questions = Question.query.filter(Question.id.not_in(previous_questions))
-                print(questions)
-                print("Done")
 
             else:
                 questions = Question.query.filter(Question.category == category_id,Question.id.not_in(previous_questions))
-            
-            # print(questions)
+        
             quiz_questions = [question.format() for question in questions]
 
             #  Check if question exist
@@ -264,22 +257,27 @@ def create_app(test_config=None):
                 random_question = random.randint(0, len(quiz_questions) - 1)
                 question = quiz_questions[random_question]
             
-            print(question)
-            
             return jsonify({
                 'question': question,
                 'success': True
             })
 
-        except Exception as e:
-            print(str(e))
-            abort(422)
+        except:
+            abort(400)
 
     """
     @TODO:
     Create error handlers for all expected errors
     including 404 and 422.
     """
+    @app.errorhandler(400)
+    def not_found(error):
+        return jsonify({
+            'success': False,
+            'error': 400,
+            'message': 'Bad request'
+        }), 400
+
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
