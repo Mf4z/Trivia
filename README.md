@@ -85,6 +85,7 @@ The error messages and the error type  returned when requests fail are as follow
 
 | Status Code | Status  | 
 | ----------- | ----------- |
+| 400        | Bad request    |         
 | 404        | Not Found    |         
 | 405        | Method not allowed |
 | 422        | Unprocessable entity |  
