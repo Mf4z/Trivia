@@ -1,84 +1,13 @@
 # TRIVIA APP
 
-## Introduction 
-
-This project is a Trivia game can be played alone or in a group of people to test their knowledge in different fields with questions of varying difficulties. The game allows a player or players to answer five(5) questions and scores a player accordingly at the end of the game.
-
-The project has various technical topics included and concepts implemented to make the application work. The following are topic covered and concepts implemented in the application :
-  - SQLAlchemy ORM
-  - CORS (Cross Origin Resource Sharing )
-  - TDD (Test Driven Development)
-  - Pagination
-  - Endpoints and Payloads
-  - Project and API Documentation
-
-This project is part of the requirements need to fulfill the attainment of the Alx-T Udacity Fullstack Nano Degree.
-## Game Play 
-<img src="images/trivia.gif" height=500px alt="trivia-game"/>
-
-## Getting Started
-
-### Pre-requisites and Local Development
-Developers using this project should already have the following installed on their local machines :
--   Python3
--   pip/pip3
--   node
-### Backend
-
-#### Conventions and Best Practices 
-- All backend code follows [PEP8 style guidelines](https://www.python.org/dev/peps/pep-0008/).
-
-#### Setup
-From the Trivia folder (main folder):
-- run `cd backend` . This command takes you to the back end folder.
-- run `pip install requirements.txt`. All required packages are included in the requirements file. 
-
-Run the following commands to startup the application (ensure you are still in the **backend** directory) : 
-```
-export FLASK_APP=flaskr
-export FLASK_DEBUG=True
-flask run
-```
-The commands above puts the application in development and directs it to use the `__init__.py` file in our flaskr folder. Working in development mode shows an interactive debugger in the console and restarts the server whenever changes are made.
-
-If running locally on Windows, look for the commands in the [Flask documentation](http://flask.pocoo.org/docs/1.0/tutorial/factory/).
-
-By default the application runs on `http://127.0.0.1:5000/` and is a proxy in the frontend configuration. 
-
-### Frontend
-
-From the frontend folder, run the following commands to start the client: 
-```
-npm install // run once to install dependencies
-
-npm start  // start front end server
-```
-
-By default, the frontend runs on `localhost:3000` 
-
-### Tests
-In order to run tests navigate to the backend folder (`commmand : cd backend`) and run the following commands: 
-
-```
-dropdb trivia_test
-createdb trivia_test
-psql trivia_test < trivia.psql
-python test_flaskr.py
-```
-
-Omit the **dropdb** command if you are running test for the first time. 
-
-All tests in the app are kept in the `test_flaskr.py` file and should be maintained as updates are made to app's functionalities. 
-
 ## API Reference
 
 - Base URL
-
   The base url for accessing the API is `http://127.0.0.1:5000/`
 
 - API Keys
-
   No Api keys needed to access the resources for this API
+
 ### Error Handling
 
 The error messages and the error type  returned when requests fail are as follows :
@@ -225,7 +154,7 @@ Errors are returned in the following JSON format :
     - Creates a new question using the question, answer, category, and difficulty.
     - Returns a question to update the frontend and success value. 
   
-- Sample: `curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"question":"Test Question", "answer":"Test Answer", "category": 1, "difficulty":4}'`
+- Sample: `curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"question":"Test Question", "answer":"Test Answer", "category":"1", "difficulty":"4"}'`
 ```
 {
   "question": "Test Question", 
@@ -250,8 +179,8 @@ Errors are returned in the following JSON format :
       "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
     }
   ], 
-  "total_questions": 1,
-  "success": true
+  "success": true, 
+  "total_questions": 1
 }
 ```
 
@@ -324,21 +253,3 @@ Errors are returned in the following JSON format :
   "success": true
 }
 ```
-  
-## Deployment N/A
-
-## Authors
-Yours truly, Marwan Mustapha Mai
-
-## Acknowledgements 
-- Allah the Almighty
-- My family and friends
-- Alx-T and Udacity team
-- Worlako Dzokoto
-- Fullstack Session Lead , Blessing Odede
-- Career Session Lead , Russel Emekoba
-- The Fullstack session members
-- My collegues at work Ibrahim Isa and Dalhatu Njidda
-
-## License
-[License](./LICENSE.txt)
