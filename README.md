@@ -36,7 +36,7 @@ From the Trivia folder (main folder):
 Run the following commands to startup the application (ensure you are still in the **backend** directory) : 
 ```
 export FLASK_APP=flaskr
-export FLASK_DEBUG=True
+export FLASK_ENV=development
 flask run
 ```
 The commands above puts the application in development and directs it to use the `__init__.py` file in our flaskr folder. Working in development mode shows an interactive debugger in the console and restarts the server whenever changes are made.
