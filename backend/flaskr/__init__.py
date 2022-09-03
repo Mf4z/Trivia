@@ -56,9 +56,9 @@ def create_app(test_config=None):
                 abort(404)
                 
             return jsonify({
-                'success':True,
                 'categories': formatted_categories,
-                'total_categories':total_categories
+                'total_categories':total_categories,
+                'success':True
                 })
         except:
             abort(500)
@@ -97,11 +97,11 @@ def create_app(test_config=None):
                 abort(404)
 
             return jsonify({
-                'success':True,
-                'questions':current_questions,
-                'categories':formatted_categories,
                 'current_category':current_category,
+                'categories':formatted_categories,
+                'questions':current_questions,
                 'total_questions': total_questions,
+                'success':True
             })
 
         except:
@@ -168,17 +168,17 @@ def create_app(test_config=None):
                 
 
                 return jsonify({
-                    'success': True,
                     'questions': formatted_questions,
-                    'total_questions': total_questions
+                    'total_questions': total_questions,
+                    'success': True
                 })
         
             new_question = Question(question=question, answer=answer, category=category, difficulty=difficulty)
             new_question.insert()
 
             return jsonify({
-                'success': True,
-                'question': question
+                'question': question,
+                'success': True
             })
 
         except:
@@ -216,9 +216,9 @@ def create_app(test_config=None):
         formatted_questions = [question.format() for question in questions]
 
         return jsonify({
-            'success': True,
+            'category': category_id,
             'questions': formatted_questions,
-            'category': category_id
+            'success': True
         })
 
     """
@@ -237,29 +237,42 @@ def create_app(test_config=None):
     def get_quizzes():
         try:
             body = request.get_json()
+            questions = []
+            question = None
             
             previous_questions = body.get("previous_questions", None)
             quiz_category = body.get("quiz_category", None)
+            print(previous_questions)
+            print(quiz_category)
             
             category_id = quiz_category['id']
-            questions = []
 
+            # Check for default category
             if  category_id == 0:
                 questions = Question.query.filter(Question.id.not_in(previous_questions))
+                print(questions)
+                print("Done")
 
             else:
                 questions = Question.query.filter(Question.category == category_id,Question.id.not_in(previous_questions))
             
+            # print(questions)
             quiz_questions = [question.format() for question in questions]
-            random_question = random.randint(0, len(quiz_questions) - 1)
-            question = quiz_questions[random_question]
+
+            #  Check if question exist
+            if quiz_questions:
+                random_question = random.randint(0, len(quiz_questions) - 1)
+                question = quiz_questions[random_question]
+            
             print(question)
+            
             return jsonify({
-                'success': True,
-                'question': question
+                'question': question,
+                'success': True
             })
 
-        except:
+        except Exception as e:
+            print(str(e))
             abort(422)
 
     """

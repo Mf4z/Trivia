@@ -15,11 +15,15 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "trivia_test"
-        self.database_path = "postgresql://{}:{}@{}/{}".format('postgres','1234','localhost:5432', self.database_name)
+        self.database_user = os.getenv('DB_USER', 'postgres')
+        self.database_password = os.getenv('DB_PASSWORD', '1234')
+        self.database_host = os.getenv('DB_HOST', '127.0.0.1:5432')
+        self.database_name = os.getenv('DB_NAME', 'trivia_test')
+        self.database_path = "postgresql://{}:{}@{}/{}".format(self.database_user,self.database_password,self.database_host, self.database_name)
         setup_db(self.app, self.database_path)
 
         self.new_question = {'question': 'Test question','answer': 'Test answer','category': 1,'difficulty': 1}
+        self.quiz_question = {'previous_questions':[],'quiz_category': {'type': 'click', 'id': 0}}
 
         # binds the app to the current context
         with self.app.app_context():
@@ -127,7 +131,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertNotEqual(len(data['questions']), 0)
 
     def test_get_quizzes(self):
-        res = self.client().post('/quizzes', json={'previous_questions' : [2,4], 'quiz_category' : 2})
+        res = self.client().post('/quizzes', json=self.quiz_question)
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 200)
